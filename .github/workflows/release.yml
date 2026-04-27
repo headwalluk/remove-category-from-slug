@@ -1,0 +1,71 @@
+name: Build Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Get version from tag
+        id: get_version
+        run: |
+          # Remove 'v' prefix from tag (v1.0.0 -> 1.0.0)
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "Plugin version: ${VERSION}"
+
+      - name: Prepare plugin directory
+        run: |
+          mkdir -p build
+          rsync -av --exclude-from=.distignore ./ build/remove-category-from-slug/
+
+      - name: Build release zips
+        # Build the versioned zip once, then copy it to the generic
+        # filename so both artifacts are guaranteed byte-identical
+        # (same SHA256, just different filenames).
+        run: |
+          cd build
+          zip -r remove-category-from-slug-${{ steps.get_version.outputs.version }}.zip remove-category-from-slug/
+          cp remove-category-from-slug-${{ steps.get_version.outputs.version }}.zip remove-category-from-slug.zip
+          cd ..
+
+      - name: Upload versioned zip as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: remove-category-from-slug-${{ steps.get_version.outputs.version }}
+          path: build/remove-category-from-slug-${{ steps.get_version.outputs.version }}.zip
+
+      - name: Upload generic zip as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: remove-category-from-slug
+          path: build/remove-category-from-slug.zip
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            build/remove-category-from-slug-${{ steps.get_version.outputs.version }}.zip
+            build/remove-category-from-slug.zip
+          body: |
+            **Remove Category from Slug v${{ steps.get_version.outputs.version }}**
+
+            Removes the "/category/" base from category archive URLs and 301-redirects the old URLs.
+
+            Download `remove-category-from-slug.zip` and install via WordPress admin (Plugins → Add New → Upload Plugin), or upload to your `wp-content/plugins/` directory.
+
+            See [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md) for full release notes.
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
