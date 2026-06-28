@@ -4,7 +4,7 @@ Tags: category, permalinks, rewrite, slug, seo
 Requires at least: 6.0
 Tested up to: 6.7
 Requires PHP: 8.0
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -48,10 +48,16 @@ The custom rewrite rules are removed and WordPress regenerates the default rules
 
 == Changelog ==
 
+= 1.0.1 =
+* Fixed: Yoast SEO canonical URLs on category archives now use the bare-slug form instead of the legacy `/category/<slug>/` URL.
+
 = 1.0.0 =
 * Initial release.
 
 == Upgrade Notice ==
+
+= 1.0.1 =
+Corrects the Yoast SEO canonical URL on category archives to the bare-slug form.
 
 = 1.0.0 =
 Initial release.

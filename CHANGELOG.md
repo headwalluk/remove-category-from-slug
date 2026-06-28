@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-06-28
+
+### Fixed
+- Yoast SEO canonical URLs on category archives now use the bare-slug form instead of the legacy `/category/<slug>/` URL, via the `wpseo_canonical` filter.
+
 ## [1.0.0] - 2026-04-27
 
 ### Added

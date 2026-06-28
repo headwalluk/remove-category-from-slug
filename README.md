@@ -1,6 +1,6 @@
 # Remove Category from Slug
 
-![Version](https://img.shields.io/badge/version-1.0.0-blue)
+![Version](https://img.shields.io/badge/version-1.0.1-blue)
 ![WordPress](https://img.shields.io/badge/WordPress-6.0%2B-21759b)
 ![PHP](https://img.shields.io/badge/PHP-8.0%2B-777bb4)
 ![License](https://img.shields.io/badge/license-GPL--2.0--or--later-green)
@@ -16,7 +16,7 @@ A small, dependency-free WordPress plugin that strips the `/category/` base from
 
 Old `/category/...` URLs are 301-redirected to the new form, so links and SEO carry over.
 
-No settings page, no telemetry, no third-party SDKs. The whole plugin is one file, ~80 lines.
+No settings page, no telemetry, no third-party SDKs. The whole plugin is a single file.
 
 ## How it works
 
@@ -27,6 +27,8 @@ Three WordPress rewrite hooks do all the work:
 3. **`request`** — sees `category_redirect` and issues a 301 to the new URL.
 
 Rewrite rules are flushed automatically on activation, deactivation, and whenever a category is created, edited, or deleted.
+
+If [Yoast SEO](https://yoast.com/wordpress/plugins/seo/) is active, the `wpseo_canonical` filter re-points category-archive canonical URLs at the bare slug too, since Yoast computes its own canonical rather than using core's. The filter is a no-op when Yoast is not installed.
 
 ## Installation
 

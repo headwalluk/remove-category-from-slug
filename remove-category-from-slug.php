@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       Remove Category from Slug
  * Description:       Removes the "/category/" base from category archive URLs and 301-redirects the old URLs.
- * Version:           1.0.0
+ * Version:           1.0.1
  * Requires at least: 6.0
  * Requires PHP:      8.0
  * Author:            Paul Faulkner
@@ -24,6 +24,7 @@ add_action( 'init', 'rcfs_override_permastruct' );
 add_filter( 'category_rewrite_rules', 'rcfs_category_rewrite_rules' );
 add_filter( 'query_vars', 'rcfs_register_query_vars' );
 add_filter( 'request', 'rcfs_redirect_old_urls' );
+add_filter( 'wpseo_canonical', 'rcfs_filter_yoast_canonical' );
 
 /**
  * Flush rewrite rules. Called on activation and whenever categories change.
@@ -113,4 +114,30 @@ function rcfs_redirect_old_urls( $query_vars ): array {
 	}
 
 	return $query_vars;
+}
+
+/**
+ * Re-point Yoast SEO's canonical URL at the bare-slug category link.
+ *
+ * Yoast computes its own canonical and caches term permalinks in its indexable tables,
+ * so it keeps emitting the old "/category/<slug>/" URL even though get_category_link()
+ * now returns the bare slug. On category archives, override Yoast's canonical with the
+ * link core generates from our overridden permastruct. No-op off category archives and
+ * (since the filter never fires) on sites without Yoast.
+ *
+ * @param string $canonical The canonical URL Yoast computed.
+ * @return string
+ */
+function rcfs_filter_yoast_canonical( $canonical ): string {
+	$result = $canonical;
+
+	if ( is_category() ) {
+		$category_link = get_category_link( get_queried_object_id() );
+
+		if ( ! is_wp_error( $category_link ) && '' !== $category_link ) {
+			$result = $category_link;
+		}
+	}
+
+	return $result;
 }
