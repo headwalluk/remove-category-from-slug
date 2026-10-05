@@ -1,9 +1,10 @@
 # Remove Category from Slug
 
-![Version](https://img.shields.io/badge/version-1.0.1-blue)
-![WordPress](https://img.shields.io/badge/WordPress-6.0%2B-21759b)
-![PHP](https://img.shields.io/badge/PHP-8.0%2B-777bb4)
-![License](https://img.shields.io/badge/license-GPL--2.0--or--later-green)
+[![Version](https://img.shields.io/github/v/release/headwalluk/remove-category-from-slug?label=version&color=blue)](https://github.com/headwalluk/remove-category-from-slug/releases/latest)
+[![PHP](https://img.shields.io/badge/PHP-8.2+-purple.svg)](https://www.php.net/)
+[![WordPress](https://img.shields.io/badge/WordPress-6.0+-21759B.svg)](https://wordpress.org/)
+[![License](https://img.shields.io/badge/license-GPL--2.0+-green.svg)](LICENSE)
+[![Coding Standards](https://img.shields.io/badge/WordPress-Coding%20Standards-blue.svg)](https://github.com/WordPress/WordPress-Coding-Standards)
 
 A small, dependency-free WordPress plugin that strips the `/category/` base from category archive URLs.
 
@@ -16,28 +17,26 @@ A small, dependency-free WordPress plugin that strips the `/category/` base from
 
 Old `/category/...` URLs are 301-redirected to the new form, so links and SEO carry over.
 
-No settings page, no telemetry, no third-party SDKs. The whole plugin is a single file.
+No settings page, no telemetry, no third-party SDKs.
 
-## How it works
+## Install
 
-Three WordPress rewrite hooks do all the work:
+1. Download `remove-category-from-slug.zip` from the [latest release](https://github.com/headwalluk/remove-category-from-slug/releases/latest)
+2. WordPress admin → Plugins → Add New → Upload Plugin → choose the zip → Install Now → Activate
 
-1. **`init`** — overrides the category permastruct to `%category%` so `get_category_link()` returns the bare slug.
-2. **`category_rewrite_rules`** — rebuilds the rule set, emitting root, paged, and feed rules per category. Parent slugs are joined with `/`. A catch-all rule maps any leftover `/<old_base>/...` request into a `category_redirect` query var.
-3. **`request`** — sees `category_redirect` and issues a 301 to the new URL.
+From 1.1.0 the plugin updates itself from GitHub Releases. See [Updates](docs/updates.md).
 
-Rewrite rules are flushed automatically on activation, deactivation, and whenever a category is created, edited, or deleted.
+## Documentation
 
-If [Yoast SEO](https://yoast.com/wordpress/plugins/seo/) is active, the `wpseo_canonical` filter re-points category-archive canonical URLs at the bare slug too, since Yoast computes its own canonical rather than using core's. The filter is a no-op when Yoast is not installed.
+See [`docs/`](docs/README.md):
 
-## Installation
-
-1. Copy the plugin folder to `wp-content/plugins/`.
-2. Activate it from the Plugins screen.
+- [How it works](docs/how-it-works.md) — rewrite rules, redirects, Yoast SEO, slug collisions
+- [Updates](docs/updates.md) — the GitHub updater and how to turn it off
+- [Hooks and filters](docs/developers/hooks-and-filters.md)
 
 ## Development
 
-PHP_CodeSniffer with WordPress Coding Standards:
+PHP_CodeSniffer with WordPress Coding Standards, configured in `phpcs.xml`:
 
 ```bash
 phpcs              # Check
